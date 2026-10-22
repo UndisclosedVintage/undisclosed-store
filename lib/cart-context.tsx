@@ -5,14 +5,15 @@ import {
   useContext,
   useEffect,
   useState,
-  ReactNode,
+  type ReactNode,
 } from "react";
 import type { Product } from "./products";
+import { precioEn, type Moneda } from "./moneda";
 
 export type CartItem = Pick<
   Product,
-  "slug" | "nombre" | "precio" | "talla" | "lote" | "categoria"
->;
+  "slug" | "nombre" | "precio" | "precioUSD" | "talla" | "lote" | "categoria"
+> & { imagen?: string };
 
 interface CartContextValue {
   items: CartItem[];
@@ -20,12 +21,13 @@ interface CartContextValue {
   remove: (slug: string) => void;
   clear: () => void;
   has: (slug: string) => boolean;
-  subtotal: number;
+  subtotal: (moneda: Moneda) => number;
+  sinPrecio: (moneda: Moneda) => CartItem[];
   ready: boolean;
 }
 
 const CartContext = createContext<CartContextValue | null>(null);
-const STORAGE_KEY = "undisclosed:expediente";
+const STORAGE_KEY = "undisclosed:seleccion:v2";
 
 export function CartProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([]);
@@ -36,14 +38,18 @@ export function CartProvider({ children }: { children: ReactNode }) {
       const raw = window.localStorage.getItem(STORAGE_KEY);
       if (raw) setItems(JSON.parse(raw));
     } catch {
-      // localStorage unavailable or corrupted — start with an empty cart
+      // localStorage no disponible o dañado: empezamos con la selección vacía
     }
     setReady(true);
   }, []);
 
   useEffect(() => {
     if (!ready) return;
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+    try {
+      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+    } catch {
+      // ignorar
+    }
   }, [items, ready]);
 
   function add(item: CartItem) {
@@ -64,11 +70,17 @@ export function CartProvider({ children }: { children: ReactNode }) {
     return items.some((p) => p.slug === slug);
   }
 
-  const subtotal = items.reduce((sum, i) => sum + i.precio, 0);
+  function subtotal(moneda: Moneda) {
+    return items.reduce((suma, i) => suma + (precioEn(i, moneda) ?? 0), 0);
+  }
+
+  function sinPrecio(moneda: Moneda) {
+    return items.filter((i) => precioEn(i, moneda) === null);
+  }
 
   return (
     <CartContext.Provider
-      value={{ items, add, remove, clear, has, subtotal, ready }}
+      value={{ items, add, remove, clear, has, subtotal, sinPrecio, ready }}
     >
       {children}
     </CartContext.Provider>

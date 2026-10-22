@@ -1,100 +1,122 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { MercadoPagoConfig, Preference } from "mercadopago";
-import { obtenerProductoPorSlug } from "@/lib/products-store";
+import { resolverCarrito } from "@/lib/checkout";
+import { folioVisible } from "@/lib/products";
+import { site } from "@/lib/site-config";
 
-interface ItemCarrito {
-  slug: string;
-}
+// Pago en pesos mexicanos con Mercado Pago (Checkout Pro).
+// Los precios y el envío se calculan aquí, nunca con lo que manda el navegador.
 
-interface Comprador {
-  nombre: string;
-  email: string;
-  telefono: string;
-  direccion: string;
-}
+const texto = (v: unknown, max = 120) =>
+  typeof v === "string" ? v.trim().slice(0, max) : "";
 
-export async function POST(req: NextRequest) {
-  const accessToken = process.env.MERCADOPAGO_ACCESS_TOKEN;
-  if (!accessToken) {
+export async function POST(req: Request) {
+  const token = process.env.MERCADOPAGO_ACCESS_TOKEN;
+  if (!token) {
     return NextResponse.json(
-      {
-        error:
-          "Falta MERCADOPAGO_ACCESS_TOKEN en las variables de entorno. Ver README.md.",
-      },
-      { status: 500 }
+      { error: "El pago con Mercado Pago todavía no está configurado." },
+      { status: 503 }
     );
   }
 
-  const body = (await req.json()) as {
-    items: ItemCarrito[];
-    comprador: Comprador;
+  let cuerpo: Record<string, unknown>;
+  try {
+    cuerpo = await req.json();
+  } catch {
+    return NextResponse.json({ error: "Solicitud inválida." }, { status: 400 });
+  }
+
+  const slugs = Array.isArray(cuerpo.slugs)
+    ? cuerpo.slugs.filter((s): s is string => typeof s === "string")
+    : [];
+
+  const comprador = {
+    nombre: texto(cuerpo.nombre),
+    email: texto(cuerpo.email),
+    telefono: texto(cuerpo.telefono, 30),
+    direccion: texto(cuerpo.direccion, 200),
+    ciudad: texto(cuerpo.ciudad),
+    estado: texto(cuerpo.estado),
+    cp: texto(cuerpo.cp, 10),
   };
 
-  if (!body.items?.length) {
+  if (
+    !comprador.nombre ||
+    !/^\S+@\S+\.\S+$/.test(comprador.email) ||
+    !comprador.telefono ||
+    !comprador.direccion ||
+    !comprador.ciudad ||
+    !comprador.estado ||
+    !/^\d{5}$/.test(comprador.cp)
+  ) {
     return NextResponse.json(
-      { error: "El expediente está vacío." },
+      { error: "Revisa tus datos de envío: hay campos vacíos o inválidos." },
       { status: 400 }
     );
   }
 
-  // Los precios SIEMPRE se resuelven en el servidor a partir del catálogo,
-  // nunca se confía en el precio que manda el navegador.
-  const itemsValidados = [];
-  for (const { slug } of body.items) {
-    const producto = await obtenerProductoPorSlug(slug);
-    if (!producto) {
-      return NextResponse.json(
-        { error: `La pieza ${slug} ya no está disponible.` },
-        { status: 400 }
-      );
-    }
-    if (!producto.stock) {
-      return NextResponse.json(
-        { error: `"${producto.nombre}" ya se vendió.` },
-        { status: 409 }
-      );
-    }
-    itemsValidados.push({
-      id: producto.slug,
-      title: `${producto.nombre} (talla ${producto.talla}, lote ${producto.lote})`,
-      quantity: 1,
-      unit_price: producto.precio,
-      currency_id: "MXN",
-    });
+  const carrito = await resolverCarrito(slugs, "MXN");
+  if (!carrito.ok) {
+    return NextResponse.json({ error: carrito.error }, { status: carrito.status });
   }
 
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || req.nextUrl.origin;
+  const base = (process.env.NEXT_PUBLIC_SITE_URL || site.dominio).replace(/\/$/, "");
+  const referencia = crypto.randomUUID();
+  const [nombrePila, ...resto] = comprador.nombre.split(/\s+/);
 
-  const client = new MercadoPagoConfig({ accessToken });
-  const preference = new Preference(client);
+  const items = [
+    ...carrito.lineas.map((l) => ({
+      id: l.producto.slug,
+      title: l.titulo.slice(0, 250),
+      quantity: 1,
+      unit_price: l.precio,
+      currency_id: "MXN",
+    })),
+    {
+      id: "envio",
+      title: "Envío nacional",
+      quantity: 1,
+      unit_price: carrito.envio,
+      currency_id: "MXN",
+    },
+  ];
 
   try {
-    const resultado = await preference.create({
+    const cliente = new MercadoPagoConfig({ accessToken: token });
+    const preferencia = await new Preference(cliente).create({
       body: {
-        items: itemsValidados,
+        items,
         payer: {
-          name: body.comprador?.nombre,
-          email: body.comprador?.email,
-          phone: { number: body.comprador?.telefono },
+          name: nombrePila,
+          surname: resto.join(" "),
+          email: comprador.email,
+          phone: { number: comprador.telefono },
+          address: { street_name: comprador.direccion, zip_code: comprador.cp },
         },
         back_urls: {
-          success: `${siteUrl}/gracias`,
-          failure: `${siteUrl}/checkout`,
-          pending: `${siteUrl}/gracias`,
+          success: `${base}/gracias`,
+          pending: `${base}/gracias`,
+          failure: `${base}/checkout`,
         },
-        auto_return: "approved",
-        statement_descriptor: "UNDISCLOSED VTG",
+        ...(base.startsWith("https://") ? { auto_return: "approved" as const } : {}),
+        external_reference: referencia,
+        statement_descriptor: "UNDISCLOSED",
         metadata: {
-          direccion_envio: body.comprador?.direccion,
+          folios: carrito.lineas.map((l) => folioVisible(l.producto.lote)).join(","),
+          envio_a: `${comprador.direccion}, ${comprador.ciudad}, ${comprador.estado}, CP ${comprador.cp}`,
+          telefono: comprador.telefono,
         },
       },
     });
 
-    return NextResponse.json({ init_point: resultado.init_point });
+    if (!preferencia.init_point) {
+      throw new Error("Mercado Pago no devolvió una URL de pago.");
+    }
+    return NextResponse.json({ url: preferencia.init_point });
   } catch (err) {
-    console.error("Error creando preferencia de Mercado Pago:", err);
+    console.error("Mercado Pago:", err);
     return NextResponse.json(
-      { error: "No se pudo iniciar el pago. Intenta de nuevo." },
+      { error: "No pudimos iniciar el pago con Mercado Pago. Intenta de nuevo." },
       { status: 502 }
     );
   }

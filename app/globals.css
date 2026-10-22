@@ -2,10 +2,25 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ───────── Paleta ─────────
+   Valores en canales RGB (r g b) para que Tailwind pueda aplicar opacidad.
+   Para cambiar los colores del sitio, edita solo este bloque. */
 :root {
-  --font-stamp: "Special Elite", "Courier New", monospace;
-  --font-serif: "PT Serif", Georgia, serif;
-  --font-mono: "IBM Plex Mono", "Courier New", monospace;
+  --c-kraft: 241 238 231; /* fondo general: el hueso de las historias (#F1EEE7) */
+  --c-kraftlight: 250 248 243; /* tarjetas y superficies */
+  --c-paper: 255 255 255; /* campos y texto sobre fondos oscuros */
+  --c-ink: 20 20 20; /* texto y contornos (#141414) */
+  --c-blackout: 20 20 20; /* barras oscuras */
+  --c-stamp: 168 51 139; /* magenta: botones y enlaces (versión oscura del rosa del logo, legible sobre crema) */
+  --c-stampdark: 138 40 115; /* magenta al pasar el mouse */
+  --c-brass: 62 88 150; /* azul oscuro: estados y acento secundario */
+  --c-brasslight: 128 156 208;
+
+  /* Colores del logo, para bloques, etiquetas y fondos decorativos */
+  --c-rosa: 228 120 200;
+  --c-azul: 128 156 208;
+  --c-verde: 194 212 160;
+
 }
 
 html {
@@ -13,21 +28,19 @@ html {
 }
 
 body {
-  background-color: #dcd1b4;
-  background-image:
-    radial-gradient(circle at 1px 1px, rgba(34, 31, 25, 0.07) 1px, transparent 0);
-  background-size: 22px 22px;
-  color: #221f19;
+  background-color: rgb(var(--c-kraft));
+  color: rgb(var(--c-ink));
 }
 
+/* Etiquetas pequeñas en monoespaciada (como en las historias) */
 .tab-label {
-  font-family: var(--font-stamp);
+  font-family: var(--font-mono), ui-monospace, monospace;
   letter-spacing: 0.06em;
 }
 
-/* Rotated rubber-stamp look, reused on badges and CTAs */
+/* Sello de goma, usado en etiquetas y avisos */
 .stamp {
-  font-family: var(--font-stamp);
+  font-family: var(--font-mono), ui-monospace, monospace;
   border: 2px solid currentColor;
   border-radius: 3px;
   padding: 2px 10px;
@@ -36,29 +49,66 @@ body {
   letter-spacing: 0.04em;
 }
 
-/* Dashed perforation line, like a tear-off ticket */
+/* Línea punteada, como un cupón desprendible */
 .perforated {
-  border-top: 2px dashed rgba(34, 31, 25, 0.35);
+  border-top: 2px dashed rgb(var(--c-ink) / 0.3);
 }
 
 .manila-card {
-  background-color: #ede6d3;
-  border: 1px solid rgba(34, 31, 25, 0.18);
-  box-shadow: 2px 3px 0 rgba(34, 31, 25, 0.1);
-}
-
-.folder-tab {
-  clip-path: polygon(0 100%, 0 30%, 15% 0, 85% 0, 100% 30%, 100% 100%);
+  background-color: rgb(var(--c-kraftlight));
+  border: 1px solid rgb(var(--c-ink) / 0.16);
+  box-shadow: 2px 3px 0 rgb(var(--c-ink) / 0.08);
 }
 
 ::selection {
-  background-color: #a23b27;
-  color: #f4efe1;
+  background-color: rgb(var(--c-stamp));
+  color: rgb(var(--c-paper));
 }
 
 :focus-visible {
-  outline: 2px solid #a23b27;
+  outline: 2px solid rgb(var(--c-stamp));
   outline-offset: 2px;
+}
+
+/* ───────── Cursor personalizado ─────────
+   Solo se activa en dispositivos con mouse y sin "reducir movimiento"
+   (ver components/CursorPersonalizado.tsx). */
+html.cursor-custom,
+html.cursor-custom a,
+html.cursor-custom button,
+html.cursor-custom select,
+html.cursor-custom label,
+html.cursor-custom summary,
+html.cursor-custom [data-cursor] {
+  cursor: none;
+}
+
+.cursor-follow {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 9999;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.cursor-core {
+  display: block;
+  width: 14px;
+  height: 14px;
+  margin: -7px 0 0 -7px;
+  border-radius: 9999px;
+  background: rgb(var(--c-stamp));
+  transition:
+    transform 0.2s ease,
+    background-color 0.2s ease;
+}
+
+.cursor-follow[data-activo="1"] .cursor-core {
+  transform: scale(3);
+  background: rgb(var(--c-stamp) / 0.22);
+  outline: 1.5px solid rgb(var(--c-stamp));
 }
 
 @media (prefers-reduced-motion: reduce) {

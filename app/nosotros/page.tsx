@@ -1,32 +1,42 @@
+import type { Metadata } from "next";
+import Image from "next/image";
+import Link from "next/link";
+import { site } from "@/lib/site-config";
+
+export const metadata: Metadata = {
+  title: "Nosotros",
+  description: `Quiénes somos: ${site.nombre}, ropa vintage desde ${site.ciudad}.`,
+};
+
 export default function Nosotros() {
   return (
-    <div className="py-10 max-w-2xl">
-      <p className="tab-label text-xs uppercase text-ink/50 mb-2">
-        expediente 000 · el archivo
-      </p>
-      <h1 className="font-serif text-3xl mb-6">Nosotros</h1>
-
-      <div className="space-y-5 font-serif text-ink/85 leading-relaxed">
+    <div className="mx-auto max-w-3xl py-12">
+      <Image
+        src={site.logos.pinchos}
+        alt=""
+        width={900}
+        height={552}
+        className="h-24 w-auto"
+      />
+      <h1 className="mt-4 font-display text-6xl">Nosotros</h1>
+      <div className="mt-6 space-y-4 font-serif text-lg leading-relaxed text-ink/80">
         <p>
-          Undisclosed es un colectivo dedicado a buscar, autenticar y vender
-          ropa vintage desde Colonia Americana, Guadalajara. Llevamos ocho
-          años haciendo esto: encontrando piezas, aprendiendo a fecharlas y
-          decidiendo cuáles merecen un lugar en la tienda.
+          {site.nombre} es una tienda de ropa vintage con base en {site.ciudad}.
+          Seleccionamos cada pieza a mano, la medimos y la fotografiamos para que
+          sepas exactamente lo que estás comprando.
         </p>
         <p>
-          No creemos que &ldquo;vintage&rdquo; sea suficiente descripción.
-          Por eso cada prenda que entra a la colección pasa por un sistema
-          de control de calidad de cinco criterios: Concepto, Época,
-          Rareza, Condición y Estética. Es el mismo criterio con el que
-          decidimos internamente qué sale a piso — aquí lo hacemos público
-          para que compres con la misma información que nosotros.
+          Todo lo que vendemos es único. Si algo te gusta, es probable que no
+          vuelva a aparecer.
         </p>
-        <p>
-          Cada pieza es única. Cuando se vende, se va del catálogo — no hay
-          reposiciones ni tallas de repuesto, porque no hay dos prendas
-          vintage iguales.
-        </p>
+        {/* TODO: reemplazar por la historia real de la tienda */}
       </div>
+      <Link
+        href="/catalogo?coleccion=nuevos"
+        className="tab-label mt-8 inline-block text-sm uppercase text-stamp hover:underline"
+      >
+        Ver New arrivals →
+      </Link>
     </div>
   );
 }

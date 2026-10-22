@@ -1,4 +1,9 @@
 /** @type {import('tailwindcss').Config} */
+
+// Los colores viven como variables CSS en app/globals.css (sección :root).
+// Para cambiar la paleta del sitio solo hay que editar esos valores.
+const c = (nombre) => `rgb(var(--c-${nombre}) / <alpha-value>)`;
+
 module.exports = {
   content: [
     "./app/**/*.{js,ts,jsx,tsx,mdx}",
@@ -7,24 +12,26 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        kraft: "#DCD1B4",
-        kraftlight: "#EDE6D3",
-        paper: "#F4EFE1",
-        ink: "#221F19",
-        blackout: "#15130F",
-        stamp: "#A23B27",
-        stampdark: "#7D2C1B",
-        brass: "#5C6E52",
-        brasslight: "#8A9A7C",
+        kraft: c("kraft"),
+        kraftlight: c("kraftlight"),
+        paper: c("paper"),
+        ink: c("ink"),
+        blackout: c("blackout"),
+        stamp: c("stamp"),
+        stampdark: c("stampdark"),
+        brass: c("brass"),
+        brasslight: c("brasslight"),
+        rosa: c("rosa"),
+        azul: c("azul"),
+        verde: c("verde"),
       },
+      // display = títulos · serif = texto corrido (Inter Tight) ·
+      // stamp/mono = etiquetas, folios y precios (IBM Plex Mono)
       fontFamily: {
-        stamp: ["var(--font-stamp)"],
-        serif: ["var(--font-serif)"],
-        mono: ["var(--font-mono)"],
-      },
-      backgroundImage: {
-        noise:
-          "radial-gradient(circle at 1px 1px, rgba(34,31,25,0.06) 1px, transparent 0)",
+        display: ["var(--font-display)", "Georgia", "serif"],
+        serif: ["var(--font-serif)", "system-ui", "sans-serif"],
+        stamp: ["var(--font-mono)", "ui-monospace", "monospace"],
+        mono: ["var(--font-mono)", "ui-monospace", "monospace"],
       },
     },
   },

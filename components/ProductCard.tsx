@@ -1,77 +1,91 @@
 "use client";
 
 import Link from "next/link";
-import FotoPendiente from "./FotoPendiente";
-import SellosQC from "./SellosQC";
+import GaleriaFotos from "./GaleriaFotos";
+import Precio from "./Precio";
 import { useCart } from "@/lib/cart-context";
-import type { Product } from "@/lib/products";
+import { useMoneda } from "@/lib/moneda-context";
+import { precioEn } from "@/lib/moneda";
+import { folioVisible, type Product } from "@/lib/products";
 
-const formatoMXN = new Intl.NumberFormat("es-MX", {
-  style: "currency",
-  currency: "MXN",
-  maximumFractionDigits: 0,
-});
-
-export default function ProductCard({ producto }: { producto: Product }) {
+export default function ProductCard({
+  producto,
+  prioridad = false,
+}: {
+  producto: Product;
+  prioridad?: boolean;
+}) {
   const { add, remove, has, ready } = useCart();
-  const enExpediente = ready && has(producto.slug);
+  const { moneda } = useMoneda();
+  const enSeleccion = ready && has(producto.slug);
+  const disponibleEnMoneda = precioEn(producto, moneda) !== null;
+  const href = `/catalogo/${producto.slug}`;
+  const m = producto.medidas;
 
   return (
-    <div className="manila-card rounded-sm overflow-hidden flex flex-col">
-      <Link href={`/catalogo/${producto.slug}`} className="block">
-        <FotoPendiente
-          lote={producto.lote}
-          epoca={producto.epoca}
-          imagen={producto.imagen}
+    <article className="flex flex-col">
+      <div className="manila-card overflow-hidden">
+        <GaleriaFotos
+          imagenes={producto.imagenes}
           alt={producto.nombre}
+          href={href}
+          vendida={!producto.stock}
+          prioridad={prioridad}
         />
-      </Link>
-      <div className="p-3 flex flex-col gap-2 flex-1">
-        <div>
-          <Link
-            href={`/catalogo/${producto.slug}`}
-            className="font-serif text-base leading-snug hover:text-stamp"
-          >
-            {producto.nombre}
-          </Link>
-          <p className="tab-label text-[11px] text-ink/60 mt-0.5">
-            talla {producto.talla} · lote {producto.lote}
-          </p>
-        </div>
-        <SellosQC qc={producto.qc} compact />
-        <div className="mt-auto pt-2 flex items-center justify-between perforated">
-          <span className="font-mono text-lg pt-2">
-            {formatoMXN.format(producto.precio)}
-          </span>
+      </div>
+
+      <div className="flex flex-1 flex-col gap-1 pt-2.5">
+        <p className="tab-label text-[11px] uppercase text-ink/55">
+          {producto.epoca} · {folioVisible(producto.lote)}
+        </p>
+        <Link
+          href={href}
+          className="font-serif text-[15px] leading-snug hover:text-stamp"
+        >
+          {producto.nombre}
+        </Link>
+        <p className="tab-label text-[11px] text-ink/60">
+          talla {producto.talla}
+          {m?.pecho ? ` · pecho ${m.pecho}″` : ""}
+          {m?.largo ? ` · largo ${m.largo}″` : ""}
+        </p>
+
+        <div className="mt-auto flex items-center justify-between gap-2 pt-1.5">
+          <Precio
+            precio={producto.precio}
+            precioUSD={producto.precioUSD}
+            className={`text-base ${producto.stock ? "" : "text-ink/40 line-through"}`}
+          />
           {producto.stock ? (
             <button
+              disabled={!disponibleEnMoneda}
               onClick={() =>
-                enExpediente
+                enSeleccion
                   ? remove(producto.slug)
                   : add({
                       slug: producto.slug,
                       nombre: producto.nombre,
                       precio: producto.precio,
+                      precioUSD: producto.precioUSD,
                       talla: producto.talla,
                       lote: producto.lote,
                       categoria: producto.categoria,
+                      imagen: producto.imagenes?.[0],
                     })
               }
-              className={`mt-2 tab-label text-xs px-3 py-1.5 rounded-sm border transition-colors ${
-                enExpediente
+              className={`tab-label rounded-sm border px-2.5 py-1 text-xs transition-colors disabled:cursor-not-allowed disabled:opacity-40 ${
+                enSeleccion
                   ? "border-brass bg-brass/15 text-brass"
                   : "border-stamp text-stamp hover:bg-stamp hover:text-paper"
               }`}
             >
-              {enExpediente ? "en tu expediente ✓" : "agregar"}
+              {enSeleccion ? "en tu selección ✓" : "agregar"}
             </button>
           ) : (
-            <span className="mt-2 tab-label text-xs px-3 py-1.5 rounded-sm border border-ink/20 text-ink/40">
-              vendida
-            </span>
+            <span className="tab-label text-xs text-ink/40">vendida</span>
           )}
         </div>
       </div>
-    </div>
+    </article>
   );
 }

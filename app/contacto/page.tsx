@@ -1,31 +1,64 @@
-export default function Contacto() {
-  return (
-    <div className="py-10 max-w-lg">
-      <p className="tab-label text-xs uppercase text-ink/50 mb-2">
-        expediente 001 · contacto
-      </p>
-      <h1 className="font-serif text-3xl mb-6">Contacto</h1>
+import type { Metadata } from "next";
+import { enlaceWhatsApp, site } from "@/lib/site-config";
 
-      <div className="manila-card rounded-sm p-6 space-y-4 font-serif">
-        <div>
-          <p className="tab-label text-[11px] uppercase text-ink/50">
-            Tienda
-          </p>
-          <p>Colonia Americana, Guadalajara, Jalisco</p>
-        </div>
-        <div>
-          <p className="tab-label text-[11px] uppercase text-ink/50">
-            WhatsApp
-          </p>
-          <p className="text-ink/60">Agrega tu número de contacto aquí.</p>
-        </div>
-        <div>
-          <p className="tab-label text-[11px] uppercase text-ink/50">
-            Instagram
-          </p>
-          <p className="text-ink/60">Agrega tu usuario aquí.</p>
-        </div>
-      </div>
+export const metadata: Metadata = {
+  title: "Contacto",
+  description: "Escríbenos: dudas sobre piezas, envíos o consigna.",
+};
+
+export default function Contacto() {
+  const wa = enlaceWhatsApp("Hola, tengo una duda sobre Undisclosed Vintage.");
+  const canales = [
+    wa && { nombre: "WhatsApp", detalle: "Respuesta más rápida", href: wa },
+    site.instagram && {
+      nombre: "Instagram",
+      detalle: `@${site.instagram}`,
+      href: `https://instagram.com/${site.instagram}`,
+    },
+    site.tiktok && {
+      nombre: "TikTok",
+      detalle: `@${site.tiktok}`,
+      href: `https://tiktok.com/@${site.tiktok}`,
+    },
+    site.email && {
+      nombre: "Correo",
+      detalle: site.email,
+      href: `mailto:${site.email}`,
+    },
+  ].filter(Boolean) as { nombre: string; detalle: string; href: string }[];
+
+  return (
+    <div className="mx-auto max-w-3xl py-12">
+      <h1 className="font-display text-6xl">Contacto</h1>
+      <p className="mt-3 font-serif text-lg text-ink/75">
+        Dudas sobre una pieza, un envío o la consigna: escríbenos.
+      </p>
+
+      {canales.length > 0 ? (
+        <ul className="mt-8 grid gap-3 sm:grid-cols-2">
+          {canales.map((c) => (
+            <li key={c.nombre}>
+              <a
+                href={c.href}
+                target="_blank"
+                rel="noreferrer"
+                className="manila-card block p-5 hover:border-stamp"
+              >
+                <p className="tab-label text-[11px] uppercase text-ink/55">{c.nombre}</p>
+                <p className="font-display text-2xl">{c.detalle}</p>
+              </a>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p className="manila-card mt-8 p-5 font-serif">
+          Pronto publicaremos aquí nuestros canales de contacto.
+        </p>
+      )}
+
+      <p className="tab-label mt-8 text-[11px] uppercase text-ink/55">
+        {site.ciudad}
+      </p>
     </div>
   );
 }

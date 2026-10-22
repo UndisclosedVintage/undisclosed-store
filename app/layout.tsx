@@ -1,32 +1,32 @@
-import type { Metadata } from "next";
-import { Special_Elite, PT_Serif, IBM_Plex_Mono } from "next/font/google";
+import type { Metadata, Viewport } from "next";
 import "./globals.css";
+import { clasesFuentes } from "@/lib/fuentes";
+import { site } from "@/lib/site-config";
+import { MonedaProvider } from "@/lib/moneda-context";
+import { CartProvider } from "@/lib/cart-context";
 import Nav from "@/components/Nav";
 import Footer from "@/components/Footer";
-import { CartProvider } from "@/lib/cart-context";
+import CursorPersonalizado from "@/components/CursorPersonalizado";
 
-const stamp = Special_Elite({
-  weight: "400",
-  subsets: ["latin"],
-  variable: "--font-stamp",
-});
-
-const serif = PT_Serif({
-  weight: ["400", "700"],
-  subsets: ["latin"],
-  variable: "--font-serif",
-});
-
-const mono = IBM_Plex_Mono({
-  weight: ["400", "500"],
-  subsets: ["latin"],
-  variable: "--font-mono",
-});
+const urlBase = process.env.NEXT_PUBLIC_SITE_URL || site.dominio;
 
 export const metadata: Metadata = {
-  title: "Undisclosed Vintage — Guadalajara",
+  metadataBase: new URL(urlBase),
+  title: {
+    default: `${site.nombre} — ropa vintage seleccionada`,
+    template: `%s — ${site.nombre}`,
+  },
   description:
-    "Ropa vintage seleccionada pieza por pieza en Colonia Americana, Guadalajara. Cada prenda pasa por nuestro sistema de control de calidad de 5 criterios.",
+    "Ropa vintage seleccionada pieza por pieza desde Colonia Americana, Guadalajara. Envíos a todo México y a Estados Unidos.",
+  openGraph: {
+    siteName: site.nombre,
+    locale: "es_MX",
+    type: "website",
+  },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#F1EEE7",
 };
 
 export default function RootLayout({
@@ -35,15 +35,18 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="es">
-      <body
-        className={`${stamp.variable} ${serif.variable} ${mono.variable} font-serif`}
-      >
-        <CartProvider>
-          <Nav />
-          <main className="max-w-5xl mx-auto px-4 sm:px-6">{children}</main>
-          <Footer />
-        </CartProvider>
+    <html lang="es" className={clasesFuentes}>
+      <body className="min-h-screen font-serif antialiased">
+        <MonedaProvider>
+          <CartProvider>
+            <Nav />
+            <main className="mx-auto w-full max-w-6xl px-4 sm:px-6">
+              {children}
+            </main>
+            <Footer />
+            <CursorPersonalizado />
+          </CartProvider>
+        </MonedaProvider>
       </body>
     </html>
   );

@@ -1,77 +1,157 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import {
+  actualizarProducto,
   agregarProducto,
   marcarVendida,
-  subirFotoProducto,
+  type DatosPieza,
 } from "@/lib/products-store";
-import type { Product } from "@/lib/products";
+import { subirArchivo } from "@/lib/blob-json";
+import { CATEGORIAS, type Categoria } from "@/lib/products";
 
-function numero(valor: FormDataEntryValue | null, porDefecto = 0) {
-  const n = Number(valor);
-  return Number.isFinite(n) ? n : porDefecto;
+// Protegido por middleware.ts (usuario y contraseña de administrador).
+
+const MAX_FOTOS = 12;
+const MAX_BYTES = 8 * 1024 * 1024;
+
+function texto(f: FormData, k: string, max = 2000) {
+  const v = f.get(k);
+  return typeof v === "string" ? v.trim().slice(0, max) : "";
 }
 
-export async function POST(req: NextRequest) {
-  try {
-    const form = await req.formData();
-    const foto = form.get("foto");
+function numero(f: FormData, k: string) {
+  const v = texto(f, k, 20);
+  if (!v) return undefined;
+  const n = Number(v.replace(",", "."));
+  return Number.isFinite(n) && n >= 0 ? n : undefined;
+}
 
-    let imagen: string | undefined;
-    if (foto instanceof File && foto.size > 0) {
-      imagen = await subirFotoProducto(foto);
+function nota(f: FormData, k: string) {
+  const n = numero(f, k);
+  return n === undefined ? 0 : Math.min(10, n);
+}
+
+async function leerFormulario(
+  f: FormData,
+  esEdicion: boolean
+): Promise<{ datos: DatosPieza } | { error: string }> {
+  const nombre = texto(f, "nombre", 140);
+  const categoria = texto(f, "categoria") as Categoria;
+  const talla = texto(f, "talla", 20);
+  const precio = numero(f, "precio");
+  const precioUSD = numero(f, "precioUSD");
+
+  if (!nombre) return { error: "Falta el nombre de la pieza." };
+  if (!CATEGORIAS.some((c) => c.valor === categoria))
+    return { error: "Categoría inválida." };
+  if (!talla) return { error: "Falta la talla." };
+  if (precio === undefined || precio <= 0)
+    return { error: "El precio en MXN es obligatorio." };
+
+  // Fotos que se conservan (solo URLs https, en el orden recibido)
+  let mantener: string[] = [];
+  if (esEdicion) {
+    try {
+      const m = JSON.parse(texto(f, "mantener", 20000) || "[]");
+      if (Array.isArray(m))
+        mantener = m.filter(
+          (u): u is string => typeof u === "string" && /^https:\/\//.test(u)
+        );
+    } catch {
+      return { error: "No se pudo leer la lista de fotos." };
     }
+  }
 
-    const nuevo = await agregarProducto({
-      nombre: String(form.get("nombre") || "").trim(),
-      categoria: (form.get("categoria") ||
-        "playeras") as Product["categoria"],
-      precio: numero(form.get("precio")),
-      talla: String(form.get("talla") || "").trim(),
-      epoca: String(form.get("epoca") || "").trim(),
-      origen: String(form.get("origen") || "").trim(),
-      descripcion: String(form.get("descripcion") || "").trim(),
+  const archivos = f
+    .getAll("fotos")
+    .filter((a): a is File => a instanceof File && a.size > 0);
+
+  if (mantener.length + archivos.length > MAX_FOTOS)
+    return { error: `Máximo ${MAX_FOTOS} fotos por pieza.` };
+  for (const a of archivos) {
+    if (!a.type.startsWith("image/"))
+      return { error: `"${a.name}" no es una imagen.` };
+    if (a.size > MAX_BYTES)
+      return { error: `"${a.name}" pesa más de 8 MB.` };
+  }
+  if (mantener.length + archivos.length === 0)
+    return { error: "Sube al menos una foto." };
+
+  const nuevas: string[] = [];
+  for (const a of archivos) nuevas.push(await subirArchivo(a, "piezas"));
+
+  const pecho = numero(f, "pecho");
+  const largo = numero(f, "largo");
+
+  return {
+    datos: {
+      nombre,
+      categoria,
+      precio,
+      precioUSD: precioUSD && precioUSD > 0 ? precioUSD : undefined,
+      talla,
+      epoca: texto(f, "epoca", 20),
+      origen: texto(f, "origen", 80),
+      descripcion: texto(f, "descripcion"),
       qc: {
-        concepto: numero(form.get("qc_concepto")),
-        epoca: numero(form.get("qc_epoca")),
-        rareza: numero(form.get("qc_rareza")),
-        condicion: numero(form.get("qc_condicion")),
-        estetica: numero(form.get("qc_estetica")),
+        concepto: nota(f, "qc_concepto"),
+        epoca: nota(f, "qc_epoca"),
+        rareza: nota(f, "qc_rareza"),
+        condicion: nota(f, "qc_condicion"),
+        estetica: nota(f, "qc_estetica"),
       },
-      imagen,
-    });
+      lote: texto(f, "lote", 20) || undefined,
+      destacada: f.get("destacada") === "on",
+      medidas: pecho || largo ? { pecho, largo } : undefined,
+      imagenes: [...mantener, ...nuevas],
+    },
+  };
+}
 
-    if (!nuevo.nombre || !nuevo.precio) {
-      return NextResponse.json(
-        { error: "Nombre y precio son obligatorios." },
-        { status: 400 }
-      );
-    }
-
-    return NextResponse.json({ producto: nuevo });
+export async function POST(req: Request) {
+  try {
+    const r = await leerFormulario(await req.formData(), false);
+    if ("error" in r) return NextResponse.json({ error: r.error }, { status: 400 });
+    const p = await agregarProducto(r.datos);
+    return NextResponse.json({ ok: true, slug: p.slug });
   } catch (err) {
-    console.error("Error agregando producto:", err);
+    console.error(err);
     return NextResponse.json(
-      {
-        error:
-          err instanceof Error ? err.message : "No se pudo guardar la pieza.",
-      },
+      { error: err instanceof Error ? err.message : "Error al guardar la pieza." },
       { status: 500 }
     );
   }
 }
 
-export async function PATCH(req: NextRequest) {
+export async function PUT(req: Request) {
   try {
-    const { slug, vendida } = (await req.json()) as {
-      slug: string;
-      vendida: boolean;
-    };
+    const f = await req.formData();
+    const slug = texto(f, "slug", 200);
+    if (!slug) return NextResponse.json({ error: "Falta la pieza." }, { status: 400 });
+    const r = await leerFormulario(f, true);
+    if ("error" in r) return NextResponse.json({ error: r.error }, { status: 400 });
+    const p = await actualizarProducto(slug, r.datos);
+    if (!p) return NextResponse.json({ error: "No existe esa pieza." }, { status: 404 });
+    return NextResponse.json({ ok: true, slug: p.slug });
+  } catch (err) {
+    console.error(err);
+    return NextResponse.json(
+      { error: err instanceof Error ? err.message : "Error al guardar la pieza." },
+      { status: 500 }
+    );
+  }
+}
+
+export async function PATCH(req: Request) {
+  try {
+    const { slug, vendida } = await req.json();
+    if (typeof slug !== "string" || typeof vendida !== "boolean")
+      return NextResponse.json({ error: "Solicitud inválida." }, { status: 400 });
     await marcarVendida(slug, vendida);
     return NextResponse.json({ ok: true });
   } catch (err) {
-    console.error("Error actualizando producto:", err);
+    console.error(err);
     return NextResponse.json(
-      { error: "No se pudo actualizar la pieza." },
+      { error: err instanceof Error ? err.message : "Error." },
       { status: 500 }
     );
   }
