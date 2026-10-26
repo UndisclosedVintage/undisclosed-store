@@ -1,4 +1,4 @@
-import { put, head, BlobNotFoundError } from "@vercel/blob";
+import { put, head, del, BlobNotFoundError } from "@vercel/blob";
 
 export const blobConfigurado = Boolean(process.env.BLOB_READ_WRITE_TOKEN);
 
@@ -66,4 +66,17 @@ export async function subirArchivo(archivo: File, carpeta: string) {
     { access: "public" }
   );
   return r.url;
+}
+
+// Borra fotos del Blob. Solo toca URLs que pertenecen al almacenamiento de Vercel.
+export async function borrarArchivos(urls: string[]) {
+  if (!blobConfigurado) return;
+  const propias = urls.filter((u) => {
+    try {
+      return new URL(u).hostname.endsWith(".public.blob.vercel-storage.com");
+    } catch {
+      return false;
+    }
+  });
+  if (propias.length) await del(propias);
 }

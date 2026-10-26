@@ -12,10 +12,16 @@ export interface QC {
   estetica: number;
 }
 
-export type Categoria = "playeras" | "chamarras" | "pantalones" | "accesorios";
+export type Categoria =
+  | "playeras"
+  | "camisas"
+  | "chamarras"
+  | "pantalones"
+  | "accesorios";
 
 export const CATEGORIAS: { valor: Categoria; label: string }[] = [
   { valor: "playeras", label: "T-Shirts" },
+  { valor: "camisas", label: "Shirts" },
   { valor: "chamarras", label: "Outerwear" },
   { valor: "pantalones", label: "Bottoms" },
   { valor: "accesorios", label: "Accesorios" },
@@ -53,6 +59,7 @@ export interface Product {
   stock: boolean; // true = disponible, false = vendida
   imagenes?: string[];
   creadoEn: string; // ISO
+  vendidaEn?: string; // ISO — cuándo se marcó como vendida (para el archivo)
   destacada?: boolean;
   medidas?: Medidas;
 }

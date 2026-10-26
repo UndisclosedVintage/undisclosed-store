@@ -43,6 +43,7 @@ export default function Footer() {
 
         <FooterCol titulo="Info">
           <Link href="/consigna">Vende tus piezas</Link>
+          <Link href="/archivo">Archivo</Link>
           <Link href="/blog">Blog</Link>
           <Link href="/faq">FAQ</Link>
           <Link href="/nosotros">Nosotros</Link>

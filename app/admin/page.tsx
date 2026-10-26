@@ -1,5 +1,6 @@
 import Link from "next/link";
 import ToggleAdmin from "@/components/ToggleAdmin";
+import EliminarPieza from "@/components/EliminarPieza";
 import { blobConfigurado } from "@/lib/blob-json";
 import { obtenerCatalogo } from "@/lib/products-store";
 import { obtenerPosts } from "@/lib/posts-store";
@@ -65,6 +66,7 @@ export default async function Panel() {
                   etiquetaActivo="vendida ✓"
                   etiquetaInactivo="marcar vendida"
                 />
+                <EliminarPieza slug={p.slug} nombre={p.nombre} vendida={!p.stock} />
               </li>
             ))}
           </ul>

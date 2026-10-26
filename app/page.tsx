@@ -91,16 +91,16 @@ export default async function Inicio() {
 
       <section className="py-14">
         <h2 className="mb-5 font-display text-4xl">Explora por categoría</h2>
-        <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+        <div className="grid grid-cols-2 gap-3 md:grid-cols-5">
           {CATEGORIAS.map((c, i) => (
             <Link
               key={c.valor}
               href={`/catalogo?categoria=${c.valor}`}
               className={`group flex aspect-[4/3] items-end p-4 ${
-                ["bg-rosa/40", "bg-azul/50", "bg-verde/60", "bg-ink/10"][i % 4]
+                ["bg-rosa/40", "bg-azul/50", "bg-verde/60", "bg-ink/10", "bg-rosa/25"][i % 5]
               }`}
             >
-              <span className="font-display text-3xl transition-transform group-hover:translate-x-1">
+              <span className="font-display text-2xl transition-transform group-hover:translate-x-1 sm:text-3xl">
                 {c.label} →
               </span>
             </Link>

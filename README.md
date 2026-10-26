@@ -8,7 +8,8 @@ Next.js 15 + Tailwind. Se publica en Vercel desde este repositorio de GitHub.
 - "Tu selección" (carrito) y pago: **Mercado Pago** para MXN y **Stripe** para USD.
 - **El fit perfecto** (guía de medidas para tops y bottoms), **Vende tus piezas** (consigna), **FAQ**, **Blog**, Nosotros y Contacto.
 - Cursor personalizado (solo con mouse).
-- Panel de administración en `/admin` para subir piezas y escribir artículos.
+- Panel de administración en `/admin` para subir, editar, marcar como vendidas y eliminar piezas, y para escribir artículos.
+- **Archivo** (`/archivo`): las piezas marcadas como vendidas quedan ahí como registro fotográfico. Para borrar una pieza por error o de prueba usa "eliminar"; para una pieza vendida usa "marcar vendida", así se conserva en el archivo.
 
 ## Variables de entorno (Vercel → Settings → Environment Variables)
 Ver `.env.example`. Después de agregarlas, haz **Redeploy**.

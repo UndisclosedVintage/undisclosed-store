@@ -2,10 +2,11 @@ import { NextResponse } from "next/server";
 import {
   actualizarProducto,
   agregarProducto,
+  eliminarProducto,
   marcarVendida,
   type DatosPieza,
 } from "@/lib/products-store";
-import { subirArchivo } from "@/lib/blob-json";
+import { borrarArchivos, subirArchivo } from "@/lib/blob-json";
 import { CATEGORIAS, type Categoria } from "@/lib/products";
 
 // Protegido por middleware.ts (usuario y contraseña de administrador).
@@ -148,6 +149,30 @@ export async function PATCH(req: Request) {
     if (typeof slug !== "string" || typeof vendida !== "boolean")
       return NextResponse.json({ error: "Solicitud inválida." }, { status: 400 });
     await marcarVendida(slug, vendida);
+    return NextResponse.json({ ok: true });
+  } catch (err) {
+    console.error(err);
+    return NextResponse.json(
+      { error: err instanceof Error ? err.message : "Error." },
+      { status: 500 }
+    );
+  }
+}
+
+export async function DELETE(req: Request) {
+  try {
+    const { slug } = await req.json();
+    if (typeof slug !== "string" || !slug)
+      return NextResponse.json({ error: "Solicitud inválida." }, { status: 400 });
+    const pieza = await eliminarProducto(slug);
+    if (!pieza)
+      return NextResponse.json({ error: "No existe esa pieza." }, { status: 404 });
+    // Las fotos se borran después; si falla, la pieza ya no está en el catálogo
+    try {
+      await borrarArchivos(pieza.imagenes ?? []);
+    } catch (err) {
+      console.error("No se pudieron borrar las fotos:", err);
+    }
     return NextResponse.json({ ok: true });
   } catch (err) {
     console.error(err);

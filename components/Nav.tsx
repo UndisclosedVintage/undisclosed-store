@@ -12,6 +12,7 @@ import { CATEGORIAS, EPOCAS } from "@/lib/products";
 const INFO = [
   { href: "/guia-de-tallas", label: "El fit perfecto" },
   { href: "/consigna", label: "Vende tus piezas" },
+  { href: "/archivo", label: "Archivo" },
   { href: "/blog", label: "Blog" },
   { href: "/faq", label: "FAQ" },
 ];
@@ -56,7 +57,7 @@ export default function Nav() {
 
         <nav
           aria-label="Colecciones"
-          className="hidden items-center gap-5 lg:flex"
+          className="hidden items-center gap-4 xl:flex"
         >
           <Link href="/catalogo?coleccion=nuevos" className={`${enlaceColeccion} text-stamp`}>
             New arrivals
@@ -108,7 +109,7 @@ export default function Nav() {
           </Link>
           <button
             type="button"
-            className="tab-label text-xs uppercase lg:hidden"
+            className="tab-label text-xs uppercase xl:hidden"
             aria-expanded={abierto}
             aria-controls="menu-movil"
             onClick={() => setAbierto((v) => !v)}
@@ -119,7 +120,7 @@ export default function Nav() {
       </div>
 
       {/* Segunda barra: páginas de información (escritorio) */}
-      <div className="hidden border-t border-ink/10 lg:block">
+      <div className="hidden border-t border-ink/10 xl:block">
         <div className="mx-auto flex max-w-6xl items-center gap-6 px-6 py-1.5">
           {INFO.map((l) => (
             <Link
@@ -137,7 +138,7 @@ export default function Nav() {
         <nav
           id="menu-movil"
           aria-label="Menú"
-          className="absolute inset-x-0 top-full max-h-[calc(100dvh-4.5rem)] overflow-y-auto border-t border-ink/15 bg-kraft px-6 py-6 lg:hidden"
+          className="absolute inset-x-0 top-full max-h-[calc(100dvh-4.5rem)] overflow-y-auto border-t border-ink/15 bg-kraft px-6 py-6 xl:hidden"
         >
           <ul className="space-y-1">
             <li>

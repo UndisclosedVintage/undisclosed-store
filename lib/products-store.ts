@@ -108,8 +108,26 @@ export async function actualizarProducto(
 
 export async function marcarVendida(slug: string, vendida: boolean) {
   const catalogo = await catalogoParaEscribir();
-  const nuevo = catalogo.map((p) =>
-    p.slug === slug ? { ...p, stock: !vendida } : p
-  );
+  const nuevo = catalogo.map((p) => {
+    if (p.slug !== slug) return p;
+    const { vendidaEn: _anterior, ...resto } = p;
+    void _anterior;
+    return vendida
+      ? { ...resto, stock: false, vendidaEn: new Date().toISOString() }
+      : { ...resto, stock: true };
+  });
   await guardarJSON(CATALOGO, nuevo);
+}
+
+// Borra una pieza del catálogo (por error o prueba). Devuelve la pieza borrada
+// para poder limpiar sus fotos.
+export async function eliminarProducto(slug: string): Promise<Product | null> {
+  const catalogo = await catalogoParaEscribir();
+  const pieza = catalogo.find((p) => p.slug === slug);
+  if (!pieza) return null;
+  await guardarJSON(
+    CATALOGO,
+    catalogo.filter((p) => p.slug !== slug)
+  );
+  return pieza;
 }
