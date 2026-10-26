@@ -7,7 +7,8 @@ export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Blog",
-  description: "Noticias, tendencias y pensamientos desde Undisclosed Vintage.",
+  description:
+    "Noticias, tendencias, comunidad y un espacio de reflexión desde Undisclosed Vintage.",
 };
 
 export default async function Blog() {
@@ -17,7 +18,8 @@ export default async function Blog() {
     <div className="py-12">
       <h1 className="font-display text-6xl">Blog</h1>
       <p className="mt-2 max-w-xl font-serif text-ink/70">
-        Noticias, tendencias y pensamientos sobre ropa vintage.
+        Noticias, tendencias, comunidad y un espacio de reflexión sobre todo tipo
+        de cosas que despiertan el interés de nuestro equipo.
       </p>
 
       {posts.length === 0 ? (

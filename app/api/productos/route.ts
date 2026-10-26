@@ -81,6 +81,7 @@ async function leerFormulario(
 
   const pecho = numero(f, "pecho");
   const largo = numero(f, "largo");
+  const cintura = numero(f, "cintura");
 
   return {
     datos: {
@@ -101,7 +102,7 @@ async function leerFormulario(
       },
       lote: texto(f, "lote", 20) || undefined,
       destacada: f.get("destacada") === "on",
-      medidas: pecho || largo ? { pecho, largo } : undefined,
+      medidas: pecho || largo || cintura ? { pecho, largo, cintura } : undefined,
       imagenes: [...mantener, ...nuevas],
     },
   };

@@ -41,6 +41,7 @@ export default async function Pieza({ params }: Props) {
     ["Talla", p.talla],
   ];
   if (p.medidas?.pecho) datos.push(["Pecho (axila a axila)", `${p.medidas.pecho}″`]);
+  if (p.medidas?.cintura) datos.push(["Cintura", `${p.medidas.cintura}″`]);
   if (p.medidas?.largo) datos.push(["Largo", `${p.medidas.largo}″`]);
   if (p.origen) datos.push(["Origen", p.origen]);
 
@@ -77,7 +78,7 @@ export default async function Pieza({ params }: Props) {
 
         <div className="flex flex-col gap-5">
           <div>
-            <p className="tab-label text-xs uppercase text-ink/55">
+            <p className="tab-label text-xs text-ink/55">
               {p.epoca} · {folioVisible(p.lote)}
             </p>
             <h1 className="mt-1 font-display text-4xl leading-tight sm:text-5xl">
@@ -115,7 +116,7 @@ export default async function Pieza({ params }: Props) {
               href="/guia-de-tallas"
               className="tab-label mt-3 inline-block text-xs uppercase text-stamp hover:underline"
             >
-              ¿Cómo me queda? Guía de medidas →
+              ¿Cómo me queda? El fit perfecto →
             </Link>
           </div>
 

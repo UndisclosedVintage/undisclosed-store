@@ -163,13 +163,23 @@ export default function FormPieza({ pieza }: { pieza?: Product }) {
             className={campo}
           />
         </Campo>
-        <Campo label="Pecho, axila a axila (pulgadas)">
+        <Campo label="Pecho, axila a axila (pulgadas, tops)">
           <input
             name="pecho"
             type="number"
             min="1"
             step="0.5"
             defaultValue={pieza?.medidas?.pecho}
+            className={campo}
+          />
+        </Campo>
+        <Campo label="Cintura (pulgadas, solo bottoms)">
+          <input
+            name="cintura"
+            type="number"
+            min="1"
+            step="0.5"
+            defaultValue={pieza?.medidas?.cintura}
             className={campo}
           />
         </Campo>

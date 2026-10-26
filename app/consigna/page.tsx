@@ -4,7 +4,7 @@ import Link from "next/link";
 import { enlaceWhatsApp, site } from "@/lib/site-config";
 
 export const metadata: Metadata = {
-  title: "Sell your shirts",
+  title: "Vende tus piezas",
   description:
     "¿Tienes ropa vintage? Cuéntanos qué tienes y vemos si encaja en Undisclosed Vintage.",
 };
@@ -36,10 +36,10 @@ export default function Consigna() {
   return (
     <div className="mx-auto max-w-3xl py-12">
       <p className="tab-label text-xs uppercase text-ink/55">Consigna</p>
-      <h1 className="font-display text-6xl">Sell your shirts</h1>
+      <h1 className="font-display text-6xl">Vende tus piezas</h1>
       <p className="mt-3 font-serif text-lg text-ink/75">
-        Si tienes ropa vintage guardada y quieres que encuentre un nuevo dueño,
-        podemos venderla por ti.
+        Si tienes piezas vintage guardadas listas para encontrar un nuevo dueño
+        podemos venderlas por ti.
       </p>
 
       <ol className="mt-10 space-y-4">

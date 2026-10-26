@@ -41,7 +41,7 @@ function lista(v: string | string[] | undefined) {
     : [];
 }
 
-function leerPecho(v: string | string[] | undefined): [number, number] | undefined {
+function leerRango(v: string | string[] | undefined): [number, number] | undefined {
   const t = unico(v);
   if (!t) return undefined;
   const rango = /^(\d+(?:\.\d+)?)-(\d+(?:\.\d+)?)$/.exec(t);
@@ -73,7 +73,8 @@ export default async function Catalogo({
     q: unico(sp.q),
     tallas: lista(sp.talla),
     epocas: lista(sp.epoca),
-    pecho: leerPecho(sp.pecho),
+    pecho: leerRango(sp.pecho),
+    cintura: leerRango(sp.cintura),
     vendidas: unico(sp.vendidas) === "1",
     orden: orden && ORDENES_VALIDOS.includes(orden) ? orden : undefined,
   };

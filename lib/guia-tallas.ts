@@ -1,48 +1,21 @@
-// Contenido de la página "The perfect fit".
-// Los rangos son una REFERENCIA general (ancho de axila a axila, en pulgadas).
-// Ajústalos con las medidas reales de las piezas que ustedes manejan.
+// Textos de la página "El fit perfecto".
+// Para cambiar los pasos o la introducción, edita aquí.
 
-export const AJUSTES = [
-  {
-    clave: "ajustada",
-    titulo: "Ajustada",
-    pecho: [17, 19] as [number, number],
-    descripcion:
-      "Cae pegada al cuerpo. Playeras chicas, cortes de mujer y piezas de los años 70 y 80.",
-  },
-  {
-    clave: "regular",
-    titulo: "Regular",
-    pecho: [19, 21] as [number, number],
-    descripcion:
-      "El corte clásico de una playera de uso diario: ni apretada ni suelta.",
-  },
-  {
-    clave: "holgada",
-    titulo: "Holgada",
-    pecho: [21, 23] as [number, number],
-    descripcion:
-      "Un poco de aire en el torso. Se ve bien sola o con una capa encima.",
-  },
-  {
-    clave: "oversized",
-    titulo: "Oversized",
-    pecho: [23, 26] as [number, number],
-    descripcion:
-      "Caída ancha y larga, el look de playera de banda de los 90.",
-  },
-];
+export const INTRO =
+  "Las tallas de antes no son las tallas de ahora. Han cambiado mucho a través del tiempo: una talla “Mediana” de 1980 no tiene las medidas de una talla “Mediana” actual. Es por eso que todas las piezas se miden a mano, para que sepas exactamente cómo te va a quedar antes de comprar.";
 
-export const TABLA_TALLAS = [
-  { talla: "S", pecho: "18–19″" },
-  { talla: "M", pecho: "20–21″" },
-  { talla: "L", pecho: "22–23″" },
-  { talla: "XL", pecho: "24–25″" },
-];
+export const PASO_GENERAL =
+  "Extiende una prenda que ya te quede como te gusta, completamente extendida sobre una superficie plana.";
 
-export const PASOS_MEDIR = [
-  "Extiende una playera que ya te quede como te gusta, bien plana sobre una mesa.",
-  "Mide de axila a axila, de costura a costura, sin estirar la tela. Ese es el ancho de pecho.",
+export const PASOS_TOPS = [
+  "Mide de axila a axila, de costura a costura, sin estirar la tela.",
   "Mide el largo desde la costura del cuello (hombro) hasta el borde inferior.",
-  "Busca piezas con esas medidas aquí abajo: la talla de la etiqueta importa menos que la medida real.",
 ];
+
+export const PASOS_BOTTOMS = [
+  "Mide la cintura de tu bottom favorito.",
+  "Mide el largo de tu bottom favorito.",
+];
+
+export const PASO_FINAL =
+  "Busca piezas con esas medidas aquí abajo: la talla de la etiqueta importa menos que la medida real.";

@@ -6,7 +6,7 @@ Next.js 15 + Tailwind. Se publica en Vercel desde este repositorio de GitHub.
 - Portada editorial, **New arrivals**, catálogo con filtros (talla, época, medida de pecho), orden y vista de 2/3/4 columnas.
 - Selector de moneda **MXN / USD** (el precio en USD se escribe a mano en cada pieza).
 - "Tu selección" (carrito) y pago: **Mercado Pago** para MXN y **Stripe** para USD.
-- **The perfect fit** (guía de medidas), **Sell your shirts** (consigna), **FAQ**, **Blog**, Nosotros y Contacto.
+- **El fit perfecto** (guía de medidas para tops y bottoms), **Vende tus piezas** (consigna), **FAQ**, **Blog**, Nosotros y Contacto.
 - Cursor personalizado (solo con mouse).
 - Panel de administración en `/admin` para subir piezas y escribir artículos.
 
@@ -28,7 +28,7 @@ Mientras no conectes Blob, el sitio muestra 14 piezas de ejemplo. Al conectarlo,
 - **Tipografías:** `lib/fuentes.ts` (títulos Instrument Serif, texto Inter Tight, etiquetas IBM Plex Mono).
 - **Datos de la tienda** (WhatsApp, Instagram, correo, fotos editoriales, aviso de "no devoluciones"): `lib/site-config.ts`. Lo vacío no se muestra.
 - **Envíos:** `lib/envio.ts` (escalones por número de piezas).
-- **Guía de medidas:** `lib/guia-tallas.ts`.
+- **Textos de El fit perfecto:** `lib/guia-tallas.ts`.
 - **Logos:** `public/brand/`.
 - **Fotos editoriales de la portada:** súbelas a `public/editorial/` y escribe sus rutas en `site.editorial`.
 
@@ -36,7 +36,7 @@ Mientras no conectes Blob, el sitio muestra 14 piezas de ejemplo. Al conectarlo,
 - Una pieza **no se marca como vendida sola** al pagar (haría falta webhooks). Hay que marcarla en `/admin`.
 - El aviso de devoluciones es un borrador: que lo revise alguien que conozca derecho del consumidor en México.
 - Los escalones de envío y el monto de envío en USD son provisionales.
-- El sitio está en español; "New arrivals", "The perfect fit" y "Sell your shirts" se dejaron en inglés como nombres de sección.
+- El sitio está en español; "New arrivals", "T-Shirts", "Outerwear" y "Bottoms" se dejaron en inglés como nombres de sección.
 
 ## Desarrollo local
 ```bash

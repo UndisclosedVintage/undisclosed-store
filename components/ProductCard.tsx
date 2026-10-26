@@ -6,7 +6,7 @@ import Precio from "./Precio";
 import { useCart } from "@/lib/cart-context";
 import { useMoneda } from "@/lib/moneda-context";
 import { precioEn } from "@/lib/moneda";
-import { folioVisible, type Product } from "@/lib/products";
+import type { Product } from "@/lib/products";
 
 export default function ProductCard({
   producto,
@@ -35,8 +35,8 @@ export default function ProductCard({
       </div>
 
       <div className="flex flex-1 flex-col gap-1 pt-2.5">
-        <p className="tab-label text-[11px] uppercase text-ink/55">
-          {producto.epoca} · {folioVisible(producto.lote)}
+        <p className="tab-label text-[11px] text-ink/55">
+          {producto.epoca}
         </p>
         <Link
           href={href}
@@ -47,6 +47,7 @@ export default function ProductCard({
         <p className="tab-label text-[11px] text-ink/60">
           talla {producto.talla}
           {m?.pecho ? ` · pecho ${m.pecho}″` : ""}
+          {m?.cintura ? ` · cintura ${m.cintura}″` : ""}
           {m?.largo ? ` · largo ${m.largo}″` : ""}
         </p>
 

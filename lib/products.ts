@@ -15,9 +15,9 @@ export interface QC {
 export type Categoria = "playeras" | "chamarras" | "pantalones" | "accesorios";
 
 export const CATEGORIAS: { valor: Categoria; label: string }[] = [
-  { valor: "playeras", label: "Playeras" },
-  { valor: "chamarras", label: "Chamarras" },
-  { valor: "pantalones", label: "Pantalones" },
+  { valor: "playeras", label: "T-Shirts" },
+  { valor: "chamarras", label: "Outerwear" },
+  { valor: "pantalones", label: "Bottoms" },
   { valor: "accesorios", label: "Accesorios" },
 ];
 
@@ -34,7 +34,8 @@ export const EPOCAS = [
 // Medidas en pulgadas
 export interface Medidas {
   pecho?: number; // ancho de axila a axila
-  largo?: number; // del cuello al borde inferior
+  largo?: number; // tops: del cuello al borde inferior · bottoms: largo total
+  cintura?: number; // solo bottoms (pantalón, short, falda)
 }
 
 export interface Product {

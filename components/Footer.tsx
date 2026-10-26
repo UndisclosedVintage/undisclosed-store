@@ -28,19 +28,21 @@ export default function Footer() {
             className="h-20 w-auto"
           />
           <p className="mt-3 font-serif text-sm text-ink/65">
-            Ropa vintage seleccionada pieza por pieza. {site.ciudad}.
+            Exclusive vintage garments.
+            <br />
+            Prisciliano Sánchez 1028, Colonia Americana, Guadalajara.
           </p>
         </div>
 
         <FooterCol titulo="Tienda">
           <Link href="/catalogo?coleccion=nuevos">New arrivals</Link>
-          <Link href="/catalogo">Todo el catálogo</Link>
+          <Link href="/catalogo">Catálogo</Link>
           <Link href="/carrito">Tu selección</Link>
-          <Link href="/guia-de-tallas">The perfect fit</Link>
+          <Link href="/guia-de-tallas">El fit perfecto</Link>
         </FooterCol>
 
         <FooterCol titulo="Info">
-          <Link href="/consigna">Sell your shirts</Link>
+          <Link href="/consigna">Vende tus piezas</Link>
           <Link href="/blog">Blog</Link>
           <Link href="/faq">FAQ</Link>
           <Link href="/nosotros">Nosotros</Link>
@@ -62,8 +64,7 @@ export default function Footer() {
 
       <div className="border-t border-ink/10">
         <p className="tab-label mx-auto max-w-6xl px-4 py-4 text-[11px] uppercase text-ink/50 sm:px-6">
-          © {new Date().getFullYear()} {site.nombre} · Cada pieza es única y
-          vintage.
+          © {new Date().getFullYear()} {site.nombre} · Exclusive vintage garments
         </p>
       </div>
     </footer>

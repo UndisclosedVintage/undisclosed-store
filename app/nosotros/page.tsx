@@ -21,15 +21,14 @@ export default function Nosotros() {
       <h1 className="mt-4 font-display text-6xl">Nosotros</h1>
       <div className="mt-6 space-y-4 font-serif text-lg leading-relaxed text-ink/80">
         <p>
-          {site.nombre} es una tienda de ropa vintage con base en {site.ciudad}.
-          Seleccionamos cada pieza a mano, la medimos y la fotografiamos para que
-          sepas exactamente lo que estás comprando.
+          {site.nombre} es una tienda de ropa vintage con base en la Colonia
+          Americana, Guadalajara. Seleccionamos cada pieza a mano, la medimos y
+          la fotografiamos para que sepas exactamente lo que estás comprando.
         </p>
         <p>
           Todo lo que vendemos es único. Si algo te gusta, es probable que no
           vuelva a aparecer.
         </p>
-        {/* TODO: reemplazar por la historia real de la tienda */}
       </div>
       <Link
         href="/catalogo?coleccion=nuevos"

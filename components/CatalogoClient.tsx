@@ -30,6 +30,7 @@ export interface FiltrosIniciales {
   tallas?: string[];
   epocas?: string[];
   pecho?: [number, number];
+  cintura?: [number, number];
   orden?: Orden;
   vendidas?: boolean;
 }
@@ -90,6 +91,18 @@ function etiquetaPecho([a, b]: [number, number]) {
   return `Pecho ${a}″–${b}″`;
 }
 
+function serializarCintura([a, b]: [number, number]) {
+  const centro = (a + b) / 2;
+  if (b - a === 1 && Number.isInteger(centro)) return String(centro);
+  return `${a}-${b}`;
+}
+
+function etiquetaCintura([a, b]: [number, number]) {
+  const centro = (a + b) / 2;
+  if (b - a === 1 && Number.isInteger(centro)) return `Cintura ${centro}″`;
+  return `Cintura ${a}″–${b}″`;
+}
+
 const chipBase =
   "tab-label rounded-sm border px-2.5 py-1 text-xs transition-colors";
 const chipOn = "border-stamp bg-stamp text-paper";
@@ -118,6 +131,9 @@ export default function CatalogoClient({
   const [epocas, setEpocas] = useState<string[]>(inicial.epocas ?? []);
   const [pecho, setPecho] = useState<[number, number] | null>(
     inicial.pecho ?? null
+  );
+  const [cintura, setCintura] = useState<[number, number] | null>(
+    inicial.cintura ?? null
   );
   const [vendidas, setVendidas] = useState(inicial.vendidas ?? false);
   const [orden, setOrden] = useState<Orden>(inicial.orden ?? ordenPorDefecto);
@@ -160,6 +176,7 @@ export default function CatalogoClient({
     if (tallas.length) p.set("talla", tallas.join(","));
     if (epocas.length) p.set("epoca", epocas.join(","));
     if (pecho) p.set("pecho", serializarPecho(pecho));
+    if (cintura) p.set("cintura", serializarCintura(cintura));
     if (vendidas) p.set("vendidas", "1");
     if (orden !== ordenPorDefecto) p.set("orden", orden);
     const qs = p.toString();
@@ -168,11 +185,11 @@ export default function CatalogoClient({
       "",
       qs ? `?${qs}` : window.location.pathname
     );
-  }, [coleccion, categoria, q, tallas, epocas, pecho, vendidas, orden, ordenPorDefecto]);
+  }, [coleccion, categoria, q, tallas, epocas, pecho, cintura, vendidas, orden, ordenPorDefecto]);
 
   useEffect(() => {
     setVisibles(PAGINA);
-  }, [coleccion, categoria, q, tallas, epocas, pecho, vendidas, orden]);
+  }, [coleccion, categoria, q, tallas, epocas, pecho, cintura, vendidas, orden]);
 
   // Piezas de partida (New arrivals = las N más recientes disponibles)
   const base = useMemo(() => {
@@ -215,6 +232,11 @@ export default function CatalogoClient({
         const v = p.medidas?.pecho;
         return typeof v === "number" && v >= pecho[0] && v <= pecho[1];
       })
+      .filter((p) => {
+        if (!cintura) return true;
+        const v = p.medidas?.cintura;
+        return typeof v === "number" && v >= cintura[0] && v <= cintura[1];
+      })
       .map((p) => ({ p, s: tokens.length ? puntaje(p, tokens) : 1 }))
       .filter((x) => x.s > 0);
 
@@ -255,7 +277,17 @@ export default function CatalogoClient({
     });
 
     return conPuntaje.map((x) => x.p);
-  }, [baseCategoria, tallas, epocas, pecho, q, orden, moneda]);
+  }, [baseCategoria, tallas, epocas, pecho, cintura, q, orden, moneda]);
+
+  // Cinturas que existen en el catálogo (números enteros), para los botones
+  const cinturasChips = useMemo(() => {
+    const set = new Set<number>();
+    for (const p of productos) {
+      const v = p.medidas?.cintura;
+      if (p.stock && typeof v === "number") set.add(Math.round(v));
+    }
+    return Array.from(set).sort((a, b) => a - b);
+  }, [productos]);
 
   const titulo =
     coleccion === "nuevos"
@@ -292,6 +324,9 @@ export default function CatalogoClient({
   if (pecho) {
     chips.push({ clave: "pecho", label: etiquetaPecho(pecho), quitar: () => setPecho(null) });
   }
+  if (cintura) {
+    chips.push({ clave: "cintura", label: etiquetaCintura(cintura), quitar: () => setCintura(null) });
+  }
 
   function limpiarTodo() {
     setColeccion(null);
@@ -299,6 +334,7 @@ export default function CatalogoClient({
     setTallas([]);
     setEpocas([]);
     setPecho(null);
+    setCintura(null);
     setQ("");
   }
 
@@ -312,6 +348,8 @@ export default function CatalogoClient({
   }
 
   const pechoUnico = pecho && pecho[1] - pecho[0] === 1 ? (pecho[0] + pecho[1]) / 2 : null;
+  const cinturaUnica =
+    cintura && cintura[1] - cintura[0] === 1 ? (cintura[0] + cintura[1]) / 2 : null;
 
   return (
     <div>
@@ -531,6 +569,29 @@ export default function CatalogoClient({
               ¿cuál es mi medida? →
             </a>
           </fieldset>
+
+          {cinturasChips.length > 0 && (
+            <fieldset>
+              <legend className="tab-label mb-2 text-[11px] uppercase text-ink/60">
+                Cintura (bottoms)
+              </legend>
+              <div className="flex flex-wrap gap-1.5">
+                {cinturasChips.map((n) => (
+                  <button
+                    key={n}
+                    type="button"
+                    aria-pressed={cinturaUnica === n}
+                    onClick={() =>
+                      setCintura(cinturaUnica === n ? null : [n - 0.5, n + 0.5])
+                    }
+                    className={`${chipBase} ${cinturaUnica === n ? chipOn : chipOff}`}
+                  >
+                    {n}″
+                  </button>
+                ))}
+              </div>
+            </fieldset>
+          )}
 
           {coleccion !== "nuevos" && (
             <label className="flex items-center gap-2 font-serif text-sm">

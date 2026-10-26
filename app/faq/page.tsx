@@ -11,17 +11,17 @@ export const metadata: Metadata = {
 
 const PREGUNTAS: { p: string; r: React.ReactNode }[] = [
   {
-    p: "¿Cada pieza es única?",
-    r: "Sí. Cada prenda es vintage y solo hay una. Cuando se vende, desaparece del catálogo o queda marcada como vendida.",
+    p: "¿No la tienen en otra talla?",
+    r: "No. Cada pieza es vintage y, por lo tanto, única. Cuando se vende, desaparece del catálogo o queda marcada como vendida.",
   },
   {
     p: "¿Cómo sé si me va a quedar?",
     r: (
       <>
-        Medimos cada pieza en pulgadas (pecho y largo). Mide una playera que ya
+        Medimos cada pieza en pulgadas (ancho y largo). Mide una pieza que ya
         te quede bien y compárala con la medida de la ficha. Más detalle en{" "}
         <Link href="/guia-de-tallas" className="text-stamp underline">
-          The perfect fit
+          El fit perfecto
         </Link>
         .
       </>
@@ -33,7 +33,8 @@ const PREGUNTAS: { p: string; r: React.ReactNode }[] = [
       <>
         Envío nacional: {formatear(TARIFAS.MXN[0].monto, "MXN")} por pieza.
         Envío internacional: {formatear(TARIFAS.USD[0].monto, "USD")} por pieza.
-        El total exacto lo ves en tu selección antes de pagar.
+        El total exacto lo ves en tu selección antes de pagar. El costo puede
+        cambiar dependiendo del peso de “Tu selección” final.
       </>
     ),
   },
@@ -67,7 +68,7 @@ const PREGUNTAS: { p: string; r: React.ReactNode }[] = [
       <>
         Sí, tenemos consigna. Mira cómo funciona en{" "}
         <Link href="/consigna" className="text-stamp underline">
-          Sell your shirts
+          Vende tus piezas
         </Link>
         .
       </>

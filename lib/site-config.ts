@@ -4,13 +4,14 @@
 export const site = {
   nombre: "Undisclosed Vintage",
   ciudad: "Colonia Americana, Guadalajara",
+  direccion: "Prisciliano Sánchez 1028, Colonia Americana, Guadalajara, Jalisco",
   dominio: "https://undisclosedvintage.com",
 
   // Canales de contacto (déjalos vacíos si todavía no los quieres mostrar)
   whatsapp: "", // formato internacional sin "+" ni espacios, ej. "523312345678"
-  instagram: "", // usuario sin @
+  instagram: "undisclosedvintage", // usuario sin @
   tiktok: "", // usuario sin @
-  email: "",
+  email: "parishilt000n69@gmail.com",
 
   // Fotos editoriales para la portada. Sube los archivos a la carpeta
   // /public/editorial y escribe aquí sus rutas, ej. ["/editorial/01.jpg"].
@@ -32,7 +33,7 @@ export const site = {
   // Aviso que aparece en cada pieza. Redáctalo con calma y, antes de publicar,
   // que lo revise alguien que conozca derecho del consumidor en México.
   avisoVintage:
-    "Pieza vintage y única: puede mostrar desgaste propio de su época. Fotografiamos y describimos los detalles visibles de cada prenda. No hay devoluciones salvo que la pieza no corresponda a lo descrito o fotografiado.",
+    "Al tratarse de piezas vintage, estas pueden mostrar desgaste propio de su época. Fotografiamos y describimos los detalles visibles de cada prenda. No hay devoluciones salvo que la pieza no corresponda a lo descrito o fotografiado.",
 };
 
 export function enlaceWhatsApp(mensaje: string) {

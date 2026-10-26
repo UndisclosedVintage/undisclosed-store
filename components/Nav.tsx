@@ -10,8 +10,8 @@ import { site } from "@/lib/site-config";
 import { CATEGORIAS, EPOCAS } from "@/lib/products";
 
 const INFO = [
-  { href: "/guia-de-tallas", label: "The perfect fit" },
-  { href: "/consigna", label: "Sell your shirts" },
+  { href: "/guia-de-tallas", label: "El fit perfecto" },
+  { href: "/consigna", label: "Vende tus piezas" },
   { href: "/blog", label: "Blog" },
   { href: "/faq", label: "FAQ" },
 ];
@@ -62,7 +62,7 @@ export default function Nav() {
             New arrivals
           </Link>
           <Link href="/catalogo" className={enlaceColeccion}>
-            Todo
+            Catálogo
           </Link>
           {CATEGORIAS.map((c) => (
             <Link
@@ -150,7 +150,7 @@ export default function Nav() {
             </li>
             <li>
               <Link href="/catalogo" className="block py-2 font-display text-3xl">
-                Todo el catálogo
+                Catálogo
               </Link>
             </li>
             {CATEGORIAS.map((c) => (

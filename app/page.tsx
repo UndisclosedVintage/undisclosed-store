@@ -65,7 +65,7 @@ export default async function Inicio() {
             href="/catalogo"
             className="tab-label rounded-sm border border-ink px-6 py-3 text-sm uppercase hover:bg-ink hover:text-paper"
           >
-            Todo el catálogo
+            Catálogo
           </Link>
         </div>
       </section>
@@ -114,9 +114,9 @@ export default async function Inicio() {
           className="manila-card group relative block overflow-hidden p-6 sm:p-8"
         >
           <p className="tab-label text-[11px] uppercase text-ink/55">Guía</p>
-          <h2 className="mt-1 font-display text-4xl">The perfect fit</h2>
+          <h2 className="mt-1 font-display text-4xl">El fit perfecto</h2>
           <p className="mt-2 max-w-sm font-serif text-ink/70">
-            La talla vintage no es la talla de hoy. Mide una playera que te
+            La talla vintage no es la talla de hoy. Mide una prenda que te
             quede bien y encuentra piezas con esa medida exacta.
           </p>
           <span className="tab-label mt-4 inline-block text-xs uppercase text-stamp">
@@ -135,10 +135,10 @@ export default async function Inicio() {
           className="manila-card group relative block overflow-hidden p-6 sm:p-8"
         >
           <p className="tab-label text-[11px] uppercase text-ink/55">Consigna</p>
-          <h2 className="mt-1 font-display text-4xl">Sell your shirts</h2>
+          <h2 className="mt-1 font-display text-4xl">Vende tus piezas</h2>
           <p className="mt-2 max-w-sm font-serif text-ink/70">
-            ¿Tienes piezas vintage guardadas? Cuéntanos qué tienes y vemos si
-            encajan en la tienda.
+            Si tienes piezas vintage guardadas listas para encontrar un nuevo
+            dueño, podemos venderlas por ti.
           </p>
           <span className="tab-label mt-4 inline-block text-xs uppercase text-stamp">
             Cómo funciona →
