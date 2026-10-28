@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import Stripe from "stripe";
 import { resolverCarrito } from "@/lib/checkout";
 import { folioVisible } from "@/lib/products";
+import { guardarPedido } from "@/lib/pedidos";
 import { site } from "@/lib/site-config";
 
 // Pago en dólares (envíos internacionales) con Stripe Checkout.
@@ -39,7 +40,36 @@ export async function POST(req: Request) {
 
   const base = (process.env.NEXT_PUBLIC_SITE_URL || site.dominio).replace(/\/$/, "");
 
+  const referencia = crypto.randomUUID();
+
   try {
+    // Se guarda antes de ir a pagar; los datos de envío los pone el aviso de
+    // Stripe cuando el pago se confirma (Stripe los pide en su propia página).
+    await guardarPedido({
+      referencia,
+      metodo: "stripe",
+      moneda: "USD",
+      estado: "pendiente",
+      creadoEn: new Date().toISOString(),
+      comprador: {
+        nombre: "",
+        email: "",
+        telefono: "",
+        direccion: "",
+        ciudad: "",
+        estado: "",
+        cp: "",
+      },
+      piezas: carrito.lineas.map((l) => ({
+        slug: l.producto.slug,
+        nombre: l.producto.nombre,
+        folio: folioVisible(l.producto.lote),
+        precio: l.precio,
+      })),
+      envio: carrito.envio,
+      total: carrito.total,
+    });
+
     const stripe = new Stripe(clave);
     const sesion = await stripe.checkout.sessions.create({
       mode: "payment",
@@ -70,7 +100,9 @@ export async function POST(req: Request) {
         },
       ],
       phone_number_collection: { enabled: true },
+      client_reference_id: referencia,
       metadata: {
+        referencia,
         folios: carrito.lineas.map((l) => folioVisible(l.producto.lote)).join(","),
       },
       success_url: `${base}/gracias`,

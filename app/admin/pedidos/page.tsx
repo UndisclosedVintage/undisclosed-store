@@ -102,7 +102,7 @@ export default async function Pedidos() {
                   timeStyle: "short",
                 })}
                 {" · "}
-                {p.comprador.nombre} · {p.piezas.map((x) => x.folio).join(", ")} ·{" "}
+                {p.comprador.nombre || "sin datos"} · {p.piezas.map((x) => x.folio).join(", ")} ·{" "}
                 {formatear(p.total, p.moneda)}
               </li>
             ))}

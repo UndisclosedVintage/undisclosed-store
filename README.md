@@ -19,6 +19,7 @@ Ver `.env.example`. Después de agregarlas, haz **Redeploy**.
 | `ADMIN_USUARIO`, `ADMIN_PASSWORD` | Entrar a `/admin`. Sin ellas el panel queda cerrado. |
 | `BLOB_READ_WRITE_TOKEN` | Guardar fotos, catálogo y blog (Vercel → Storage → Create → Blob, y conéctalo al proyecto). |
 | `MERCADOPAGO_ACCESS_TOKEN` | Cobrar en MXN. También permite confirmar los pagos automáticamente (webhook). |
+| `STRIPE_WEBHOOK_SECRET` | Confirmar pagos de Stripe automáticamente (endpoint `/api/webhook-stripe`). |
 | `RESEND_API_KEY` | (Opcional) Correo de aviso por cada pedido pagado. |
 | `STRIPE_SECRET_KEY` | Cobrar en USD. |
 | `NEXT_PUBLIC_SITE_URL` | `https://undisclosedvintage.com` (regresos del pago y sitemap). |

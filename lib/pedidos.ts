@@ -82,6 +82,13 @@ export async function listarPedidos(): Promise<Pedido[]> {
     .sort((a, b) => b.creadoEn.localeCompare(a.creadoEn));
 }
 
+// Ignora campos vacíos para no borrar datos que ya teníamos
+function limpiar(c?: Partial<Pedido["comprador"]>) {
+  return Object.fromEntries(
+    Object.entries(c ?? {}).filter(([, v]) => typeof v === "string" && v.trim())
+  );
+}
+
 /**
  * Se llama cuando el procesador de pagos confirma que el dinero entró.
  * Es seguro llamarla varias veces para el mismo pago (Mercado Pago reintenta
@@ -89,7 +96,8 @@ export async function listarPedidos(): Promise<Pedido[]> {
  */
 export async function confirmarPago(
   referencia: string,
-  pagoId: string
+  pagoId: string,
+  comprador?: Partial<Pedido["comprador"]>
 ): Promise<{ ok: true; yaProcesado: boolean } | { ok: false; error: string }> {
   const pedido = await obtenerPedido(referencia);
   if (!pedido) {
@@ -107,6 +115,7 @@ export async function confirmarPago(
   const conflicto = yaVendidas.length > 0;
   const actualizado: Pedido = {
     ...pedido,
+    comprador: { ...pedido.comprador, ...limpiar(comprador) },
     estado: conflicto ? "revisar" : "pagado",
     pagadoEn: new Date().toISOString(),
     pagoId,
