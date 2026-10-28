@@ -21,6 +21,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         <Link href="/admin/blog/nuevo" className="tab-label text-xs uppercase hover:text-stamp">
           + Nuevo artículo
         </Link>
+        <Link href="/admin/pedidos" className="tab-label text-xs uppercase hover:text-stamp">
+          Pedidos
+        </Link>
         <Link href="/" className="tab-label ml-auto text-xs uppercase text-ink/55 hover:text-stamp">
           Ver el sitio →
         </Link>

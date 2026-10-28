@@ -60,6 +60,7 @@ export interface Product {
   imagenes?: string[];
   creadoEn: string; // ISO
   vendidaEn?: string; // ISO — cuándo se marcó como vendida (para el archivo)
+  pedidoRef?: string; // pedido que la vendió (solo si se vendió por el sitio)
   destacada?: boolean;
   medidas?: Medidas;
 }

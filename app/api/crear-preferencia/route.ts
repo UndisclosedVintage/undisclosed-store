@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { MercadoPagoConfig, Preference } from "mercadopago";
 import { resolverCarrito } from "@/lib/checkout";
 import { folioVisible } from "@/lib/products";
+import { guardarPedido } from "@/lib/pedidos";
 import { site } from "@/lib/site-config";
 
 // Pago en pesos mexicanos con Mercado Pago (Checkout Pro).
@@ -82,6 +83,25 @@ export async function POST(req: Request) {
   ];
 
   try {
+    // El pedido se guarda ANTES de mandar al comprador a pagar. Cuando Mercado
+    // Pago avise que el pago se aprobó, el sitio sabe qué piezas eran.
+    await guardarPedido({
+      referencia,
+      metodo: "mercadopago",
+      moneda: "MXN",
+      estado: "pendiente",
+      creadoEn: new Date().toISOString(),
+      comprador,
+      piezas: carrito.lineas.map((l) => ({
+        slug: l.producto.slug,
+        nombre: l.producto.nombre,
+        folio: folioVisible(l.producto.lote),
+        precio: l.precio,
+      })),
+      envio: carrito.envio,
+      total: carrito.total,
+    });
+
     const cliente = new MercadoPagoConfig({ accessToken: token });
     const preferencia = await new Preference(cliente).create({
       body: {
@@ -100,6 +120,9 @@ export async function POST(req: Request) {
         },
         ...(base.startsWith("https://") ? { auto_return: "approved" as const } : {}),
         external_reference: referencia,
+        ...(base.startsWith("https://")
+          ? { notification_url: `${base}/api/webhook-mercadopago` }
+          : {}),
         statement_descriptor: "UNDISCLOSED",
         metadata: {
           folios: carrito.lineas.map((l) => folioVisible(l.producto.lote)).join(","),

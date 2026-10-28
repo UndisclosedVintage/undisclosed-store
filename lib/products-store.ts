@@ -4,6 +4,7 @@ import {
   type Categoria,
   type Medidas,
   type QC,
+  folioVisible,
 } from "./products";
 import { blobConfigurado, guardarJSON, leerJSON } from "./blob-json";
 
@@ -110,13 +111,37 @@ export async function marcarVendida(slug: string, vendida: boolean) {
   const catalogo = await catalogoParaEscribir();
   const nuevo = catalogo.map((p) => {
     if (p.slug !== slug) return p;
-    const { vendidaEn: _anterior, ...resto } = p;
+    const { vendidaEn: _anterior, pedidoRef: _ref, ...resto } = p;
     void _anterior;
+    void _ref;
     return vendida
       ? { ...resto, stock: false, vendidaEn: new Date().toISOString() }
       : { ...resto, stock: true };
   });
   await guardarJSON(CATALOGO, nuevo);
+}
+
+// Marca varias piezas como vendidas por un pedido pagado en el sitio, en una
+// sola escritura. Devuelve las que ya estaban vendidas por OTRO motivo (venta en
+// tienda, otro pedido): ahí hay que resolver con el comprador. Si la pieza ya
+// la había marcado este mismo pedido (aviso repetido), no cuenta como conflicto.
+export async function marcarVendidas(
+  slugs: string[],
+  pedidoRef: string
+): Promise<{ yaVendidas: string[] }> {
+  const catalogo = await catalogoParaEscribir();
+  const yaVendidas: string[] = [];
+  const ahora = new Date().toISOString();
+  const nuevo = catalogo.map((p) => {
+    if (!slugs.includes(p.slug)) return p;
+    if (!p.stock) {
+      if (p.pedidoRef !== pedidoRef) yaVendidas.push(folioVisible(p.lote));
+      return p;
+    }
+    return { ...p, stock: false, vendidaEn: ahora, pedidoRef };
+  });
+  await guardarJSON(CATALOGO, nuevo);
+  return { yaVendidas };
 }
 
 // Borra una pieza del catálogo (por error o prueba). Devuelve la pieza borrada
