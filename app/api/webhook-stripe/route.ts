@@ -42,7 +42,11 @@ export async function POST(req: Request) {
     return NextResponse.json({ ok: true, estado: sesion.payment_status });
   }
 
-  const envio = sesion.collected_information?.shipping_details;
+  // Según la versión de API del aviso, la dirección viene en un lugar u otro
+  const envio =
+    sesion.collected_information?.shipping_details ??
+    (sesion as unknown as { shipping_details?: Stripe.Checkout.Session.CollectedInformation.ShippingDetails })
+      .shipping_details;
   const dir = envio?.address;
 
   try {
